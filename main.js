@@ -1,21 +1,23 @@
 $(document).ready(function () {
+
+    // Form validation on submit
     $(".btn-submit").click(function (event) {
       event.preventDefault(); // Prevent the form from submitting
-
+  
       // Retrieve input values
-      let firstName = $("#first-name").val().trim();
-      let lastName = $("#last-name").val().trim();
-      let email = $("#email").val().trim();
-      let password = $("#password").val().trim();
-      let phone = $("#phone").val().trim();
-
+      var firstName = $("#first-name").val().trim();
+      var lastName = $("#last-name").val().trim();
+      var email = $("#email").val().trim();
+      var password = $("#password").val().trim();
+      var phone = $("#phone").val().trim();
+  
       // Initialize validation flag and message
-      let isValid = true;
-      let message = "";
-
+      var isValid = true;
+      var message = "";
+  
       // Reset borders
       $("input").css("border", "1px solid #ccc");
-
+  
       // Check required fields
       if (!firstName) {
         isValid = false;
@@ -33,7 +35,7 @@ $(document).ready(function () {
         isValid = false;
         $("#password").css("border", "1px solid red");
       }
-
+  
       // Determine the message based on validation
       if (!firstName && !lastName && !email && !password) {
         message = "Please fill in the form.";
@@ -46,64 +48,49 @@ $(document).ready(function () {
       } else {
         message = "You are now connected. <a href='index.html'>Return to the main page</a>";
       }
-
-     
+  
       $(".form-message").html(message).css("color", message.includes("connected") ? "green" : "red");
     });
-  });
-  /* card */
-  $(document).ready(function () {
+  
     // Function to handle adding items to the cart
     $(".card button").click(function () {
-      // Get the product details
       const productCard = $(this).closest(".card");
       const productName = productCard.find("h3").text();
       const productPrice = productCard.find(".price").text();
       const productImage = productCard.find("img").attr("src");
   
-      // Create an object to store the product details
       const product = {
         name: productName,
         price: productPrice,
-        image: productImage,
+        image: productImage
       };
   
-      // Retrieve existing cart data from localStorage
-      let cart = JSON.parse(localStorage.getItem("cart")) || [];
-  
-      // Check if the product is already in the cart
+      var cart = JSON.parse(localStorage.getItem("cart")) || [];
       const isInCart = cart.some((item) => item.name === productName);
+      
       if (isInCart) {
         alert(`${productName} is already in your cart!`);
         return;
       }
   
-      // Add the product to the cart
       cart.push(product);
-  
-      // Save the updated cart back to localStorage
       localStorage.setItem("cart", JSON.stringify(cart));
   
-      // Change button appearance
       $(this).text("Already in Cart").css({
         backgroundColor: "green",
         color: "white",
         cursor: "not-allowed",
       }).prop("disabled", true);
   
-      // Notify the user
       alert(`${productName} has been added to your cart!`);
     });
   
     // Update the cart items on the "My Cart" page
     if ($(".cart-items").length > 0) {
       const cart = JSON.parse(localStorage.getItem("cart")) || [];
-  
-      // Check if the cart is empty
       if (cart.length === 0) {
         $(".cart-items").html("<p>Your cart is empty.</p>");
       } else {
-        // Generate cart items dynamically
         cart.forEach((product) => {
           const cartItemHTML = `
             <div class="cart-item">
@@ -111,6 +98,7 @@ $(document).ready(function () {
               <div class="cart-item-details">
                 <h3>${product.name}</h3>
                 <p>${product.price}</p>
+                <button class="remove-item">Remove</button>
               </div>
             </div>
             <hr>
@@ -121,7 +109,7 @@ $(document).ready(function () {
     }
   
     // Update the button states on the index page for items already in the cart
-    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    var cart = JSON.parse(localStorage.getItem("cart")) || [];
     $(".card").each(function () {
       const productName = $(this).find("h3").text();
       if (cart.some((item) => item.name === productName)) {
@@ -132,136 +120,106 @@ $(document).ready(function () {
         }).prop("disabled", true);
       }
     });
-  });
-  $(document).ready(function () {
-    // When the user types in the search input field
-    $(".search-container input[name='search']").on("input", function () {
-      // Get the search query and convert it to lowercase
-      const query = $(this).val().toLowerCase();
   
-      // Iterate over all the product cards
+    // Handle search input field
+    $(".search-container input[name='search']").on("input", function () {
+      const query = $(this).val().toLowerCase();
       $(".card").each(function () {
         const productName = $(this).find("h3").text().toLowerCase();
-  
-        // Check if the product name includes the search query
         if (productName.includes(query)) {
-          $(this).show(); // Show matching products
+          $(this).show();
         } else {
-          $(this).hide(); // Hide non-matching products
+          $(this).hide();
         }
       });
-  
-      // If the search query is empty, show all products
       if (query === "") {
         $(".card").show();
       }
     });
-  });
-  $(document).ready(function () {
+  
     // Function to filter products based on category selection
     $("#category").change(function () {
-      const selectedCategory = $(this).val(); // Get selected category
-      
-      // Show all products if 'All Categories' is selected
+      const selectedCategory = $(this).val();
       if (selectedCategory === "all") {
-        $(".card").show(); // Show all cards
+        $(".card").show();
       } else {
-        // Filter products by selected category
         $(".card").each(function () {
-          const productCategory = $(this).data("category"); // Get the category of the current product
-          
+          const productCategory = $(this).data("category");
           if (productCategory === selectedCategory) {
-            $(this).show(); // Show matching category
+            $(this).show();
           } else {
-            $(this).hide(); // Hide non-matching categories
+            $(this).hide();
           }
         });
       }
     });
-  });
-  /*Local Storage Integration*/
-  $(document).ready(function () {
+  
+    // Local Storage Integration for adding items to the cart (Revised)
     $(".add-to-cart").click(function () {
-      // Get product details
       const productName = $(this).closest(".product").find(".product-name").text();
       const productPrice = $(this).closest(".product").find(".product-price").text();
       const productImage = $(this).closest(".product").find("img").attr("src");
   
-      // Create a product object
       const product = {
         name: productName,
         price: productPrice,
         image: productImage
       };
   
-      // Get existing cart data from localStorage or initialize it as an empty array
-      let cart = JSON.parse(localStorage.getItem("cart")) || [];
+      var cart = JSON.parse(localStorage.getItem("cart")) || [];
+      const isInCart = cart.some((item) => item.name === productName);
+      
+      if (isInCart) {
+        alert(`${productName} is already in your cart!`);
+        return;
+      }
   
-      // Add the new product to the cart
       cart.push(product);
-  
-      // Save the updated cart to localStorage
       localStorage.setItem("cart", JSON.stringify(cart));
   
-      // Optionally, show a notification to the user
       alert(`${productName} has been added to your cart!`);
     });
-  });
-  $(document).ready(function () {
-    // Retrieve the cart from localStorage
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
   
-    // Check if the cart is empty
+    // Handle cart items retrieval
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
     if (cart.length === 0) {
       $(".cart-items").html("<p>Your cart is empty.</p>");
-      return;
+    } else {
+      cart.forEach((product) => {
+        const cartItemHTML = `
+          <div class="cart-item">
+            <img src="${product.image}" alt="${product.name}" style="width:100px; height:auto;">
+            <div class="cart-item-details">
+              <h3>${product.name}</h3>
+              <p>${product.price}</p>
+              <button class="remove-item">Remove</button>
+            </div>
+          </div>
+          <hr>
+        `;
+        $(".cart-items").append(cartItemHTML);
+      });
     }
   
-    // Generate cart items dynamically
-    cart.forEach((product) => {
-      const cartItemHTML = `
-        <div class="cart-item">
-          <img src="${product.image}" alt="${product.name}" style="width:100px; height:auto;">
-          <div class="cart-item-details">
-            <h3>${product.name}</h3>
-            <p>${product.price}</p>
-          </div>
-        </div>
-        <hr>
-      `;
-      $(".cart-items").append(cartItemHTML);
-    });
-  });
-  $(document).ready(function () {
-    $(".remove-item").click(function () {
+    // Remove item from cart
+    $(".cart-items").on("click", ".remove-item", function () {
       const productName = $(this).closest(".cart-item").find("h3").text();
-  
-      // Get the cart from localStorage
-      let cart = JSON.parse(localStorage.getItem("cart")) || [];
-  
-      // Filter out the item to be removed
+      var cart = JSON.parse(localStorage.getItem("cart")) || [];
       cart = cart.filter(item => item.name !== productName);
-  
-      // Save the updated cart to localStorage
       localStorage.setItem("cart", JSON.stringify(cart));
-  
-      // Remove the item from the DOM
       $(this).closest(".cart-item").remove();
+      $(".cart-count").text(cart.length); // Update cart count
     });
-  });
-  $(document).ready(function () {
+  
+    // Clear the cart
     $(".clear-cart").click(function () {
-      // Clear the cart in localStorage
       localStorage.removeItem("cart");
-  
-      // Optionally, update the UI
       $(".cart-items").html("<p>Your cart is now empty.</p>");
+      $(".cart-count").text(0); // Update cart count
     });
-  });
-  $(document).ready(function () {
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
   
-    // Update the cart icon with the number of items in the cart
+    // Update cart icon with the number of items in the cart
     $(".cart-count").text(cart.length);
+  
   });
   
